@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -18,13 +20,14 @@ func main() {
 		Use:   "apache",
 		Short: "install and set up apache",
 		Run: func(cmd *cobra.Command, args []string) {
-			var name string
-			prompt := &survey.Input{
-				Message: "What is your name?",
+			fmt.Println("Installing apache...")
+			apacheInstaller := exec.Command("pkg", "install", "apache2")
+			apacheInstallerOutput, err := apacheInstaller.Output()
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
 			}
-			survey.AskOne(prompt, &name)
-
-			fmt.Printf("Hello, %s!\n", name)
+			fmt.Println(string(apacheInstallerOutput))
 		},
 	}
 
@@ -46,14 +49,14 @@ func main() {
 
 			survey.AskOne(nameH, &name)
 
-			// fmt.Println("Installing git...")
-			// gitInstaller := exec.Command("pkg", "install", "git")
-			// gitInstallerOutput, err := gitInstaller.Output()
-			//    if err != nil {
-			//      fmt.Println("Error:", err)
-			//      return
-			//    }
-			//    fmt.Println(string(gitInstallerOutput))
+			fmt.Println("Installing git...")
+			gitInstaller := exec.Command("pkg", "install", "git")
+			gitInstallerOutput, err := gitInstaller.Output()
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+			fmt.Println(string(gitInstallerOutput))
 
 			// set user.email
 			emailCmd := exec.Command("git", "config", "--global", "user.email", email)
@@ -71,10 +74,32 @@ func main() {
 				return
 			}
 
+			// generate ssh key
+			fmt.Println("Generating ssh key...")
+			sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email)
+			if out, err := sshCmd.CombinedOutput(); err != nil {
+				fmt.Println("Error generating ssh key:", err)
+				fmt.Println("Output:", string(out))
+				return
+			}
 
+			// cat out the ssh key
+			fmt.Println("Your ssh key is:")
 
+			home, err := os.UserHomeDir()
+			if err != nil {
+				fmt.Println("Error finding home directory:", err)
+				return
+			}
 
+			sshKeyPath := filepath.Join(home, ".ssh", "id_ed25519.pub")
+			sshCatCmd := exec.Command("cat", sshKeyPath)
 
+			if out, err := sshCatCmd.CombinedOutput(); err != nil {
+				fmt.Println("Error generating ssh key:", err)
+				fmt.Println("Output:", string(out))
+				return
+			}
 		},
 	}
 
