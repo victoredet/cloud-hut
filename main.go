@@ -103,6 +103,7 @@ func main() {
 		},
 	}
 
+	rootCmd.Version = "0.0.1"
 	rootCmd.AddCommand(gitSetUp)
 	rootCmd.AddCommand(apacheCmd)
 
