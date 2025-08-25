@@ -58,7 +58,6 @@ func main() {
 			}
 			fmt.Println(string(gitInstallerOutput))
 
-			// set user.email
 			emailCmd := exec.Command("git", "config", "--global", "user.email", email)
 			if out, err := emailCmd.CombinedOutput(); err != nil {
 				fmt.Println("Error setting email:", err)
@@ -66,7 +65,6 @@ func main() {
 				return
 			}
 
-			// Set user.name
 			nameCmd := exec.Command("git", "config", "--global", "user.name", name)
 			if out, err := nameCmd.CombinedOutput(); err != nil {
 				fmt.Println("Error setting name:", err)
@@ -74,7 +72,6 @@ func main() {
 				return
 			}
 
-			// generate ssh key
 			fmt.Println("Generating ssh key...")
 			sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email)
 			if out, err := sshCmd.CombinedOutput(); err != nil {
@@ -83,9 +80,7 @@ func main() {
 				return
 			}
 
-			// cat out the ssh key
 			fmt.Println("Your ssh key is:")
-
 			home, err := os.UserHomeDir()
 			if err != nil {
 				fmt.Println("Error finding home directory:", err)
