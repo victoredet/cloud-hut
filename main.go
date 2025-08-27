@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 )
 
@@ -116,6 +117,16 @@ func main() {
 
 			fmt.Println("Copy this to GitHub:")
 			fmt.Println(string(pubKey))
+
+			pubKeyStr := string(pubKey)
+			err = clipboard.WriteAll(pubKeyStr)
+			if err != nil {
+				fmt.Println("Failed to copy to clipboard:", err)
+			} else {
+				fmt.Println("✅ SSH public key copied to clipboard.")
+			}
+
+			exec.Command("xdg-open", "https://github.com/settings/ssh/new")
 		},
 	}
 
