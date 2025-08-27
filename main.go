@@ -171,6 +171,7 @@ func main() {
 			apacheCmd.Run(cmd, args)
 			gitSetUp.Run(cmd, args)
 			composerSetupCmd.Run(cmd, args)
+			nodeSetupCmd.Run(cmd, args)
 		},
 	}
 
