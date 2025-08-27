@@ -1,0 +1,44 @@
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of go build
+/build/
+/bin/
+/dist/
+
+# Local dependencies
+/vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Go modules
+go.sum
+
+# IDE/editor files
+*.log
+*.swp
+*.tmp
+*.out
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs (GoLand, etc.)
+.idea/
+
+# MacOS files
+.DS_Store
+
+# Coverage files
+*.coverprofile
+coverage.out

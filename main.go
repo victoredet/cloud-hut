@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
+
+	"mobileHost/projects"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/atotto/clipboard"
@@ -182,11 +183,35 @@ func main() {
 		},
 	}
 
+	addProjectCmd := &cobra.Command{
+		Use:   "project",
+		Short: "add a new project",
+		Run: func(cmd *cobra.Command, args []string) {
+			var projectType string
+			var projectName string
+			projectTypeH := &survey.Input{
+				Message: "What kind of project do you want to create (laravel, php, node): ",
+			}
+			projectNameH := &survey.Input{
+				Message: "What do you want to call the project: ",
+			}
+
+			survey.AskOne(projectNameH, &projectName)
+			survey.AskOne(projectTypeH, &projectType)
+
+			projects.CreateProject(projectName, projectType)
+			//
+
+			fmt.Println("Adding a new project...")
+		},
+	}
+
 	rootCmd.Version = "0.0.1"
 	rootCmd.AddCommand(gitSetUp)
 	rootCmd.AddCommand(apacheCmd)
 	rootCmd.AddCommand(globalSetupCmd)
 	rootCmd.AddCommand(composerSetupCmd)
 	rootCmd.AddCommand(nodeSetupCmd)
+	rootCmd.AddCommand(addProjectCmd)
 	rootCmd.Execute()
 }
