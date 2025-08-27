@@ -102,22 +102,20 @@ func main() {
 				fmt.Println("Output:", string(out))
 				return
 			}
-			// cat ~/.ssh/id_ed25518.pub
-			fmt.Println("Copy this to github: ")
-			sshKeyDisplayCmd := exec.Command("cat", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518.pub"))
-			if out, err := sshKeyDisplayCmd.CombinedOutput(); err != nil {
-				fmt.Println("Error displaying ssh key:", err)
-				fmt.Println("Output:", string(out))
+
+			fmt.Println("SSH key generated successfully.")
+			fmt.Println("Copy this to GitHub: ")
+			keyPath := filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518")
+
+			sshKeyDisplayCmd := keyPath + ".pub"
+			pubKey, err := os.ReadFile(sshKeyDisplayCmd)
+			if err != nil {
+				fmt.Println("Error reading public key:", err)
 				return
 			}
 
-			sshKeyDisplayCmdOutput, err := sshKeyDisplayCmd.Output()
-			if err != nil {
-				fmt.Println("Error displaying ssh key:", err)
-				return
-			}
-			fmt.Println(string(sshKeyDisplayCmdOutput))
-			// fmt.Println(string(sshKeyDisplayCmdOutput.Output()))
+			fmt.Println("Copy this to GitHub:")
+			fmt.Println(string(pubKey))
 		},
 	}
 
