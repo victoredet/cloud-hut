@@ -130,14 +130,47 @@ func main() {
 		},
 	}
 
+	composerSetupCmd := &cobra.Command{
+		Use:   "composer",
+		Short: "install and set up composer",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Installing composer...")
+			composerInstaller := exec.Command("sudo", "pacman", "--noconfirm", "-S", "composer")
+			composerInstallerOutput, err := composerInstaller.Output()
+			fmt.Println(string(composerInstallerOutput))
+			if err != nil {
+				fmt.Println("Error:", err)
+				// tell server what has happened here
+				fmt.Println("Please allow us send diagnostic information for help")
+			}
+		},
+	}
+
+	// node, yarn and npm
+	nodeSetupCmd := &cobra.Command{
+		Use:   "node",
+		Short: "install and set up node",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Installing node...")
+			nodeInstaller := exec.Command("sudo", "pacman", "--noconfirm", "-S", "npm")
+			nodeInstallerOutput, err := nodeInstaller.Output()
+			fmt.Println(string(nodeInstallerOutput))
+			if err != nil {
+				fmt.Println("Error:", err)
+				// tell server what has happened here
+				fmt.Println("Please allow us send diagnostic information for help")
+			}
+		},
+	}
+
 	globalSetupCmd := &cobra.Command{
 		Use:   "init",
 		Short: "set up the system",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Welcome to cloud-hut! Give us a few moments to set up ")
 			apacheCmd.Run(cmd, args)
-
-			// setup git
+			gitSetUp.Run(cmd, args)
+			composerSetupCmd.Run(cmd, args)
 		},
 	}
 
@@ -145,5 +178,7 @@ func main() {
 	rootCmd.AddCommand(gitSetUp)
 	rootCmd.AddCommand(apacheCmd)
 	rootCmd.AddCommand(globalSetupCmd)
+	rootCmd.AddCommand(composerSetupCmd)
+	rootCmd.AddCommand(nodeSetupCmd)
 	rootCmd.Execute()
 }
