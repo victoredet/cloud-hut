@@ -20,14 +20,26 @@ func main() {
 		Use:   "apache",
 		Short: "install and set up apache",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Installing apache...")
-			apacheInstaller := exec.Command("pkg", "install", "apache2")
-			apacheInstallerOutput, err := apacheInstaller.Output()
-			if err != nil {
-				fmt.Println("Error:", err)
+			// check apache already installed
+			fmt.Println("Checking if apache is already installed...")
+			apacheCmd := exec.Command("pacman", "-Q", "apache")
+			apacheCmdOutput, err := apacheCmd.Output()
+			if err == nil {
+				fmt.Println("Apache is already set up for use")
+				fmt.Println(string(apacheCmdOutput))
 				return
 			}
+
+			fmt.Println("Installing apache...")
+			apacheInstaller := exec.Command("sudo", "pacman", "--noconfirm", "-S", "apache")
+			// apacheInstallerOutput, err := apacheInstaller.Output()
+			apacheInstallerOutput, err := apacheInstaller.CombinedOutput()
 			fmt.Println(string(apacheInstallerOutput))
+			if err != nil {
+				fmt.Println("Error:", err)
+				// tell server what has happened here
+				fmt.Println("Please allow us send diagnostic information for help")
+			}
 		},
 	}
 
@@ -50,13 +62,24 @@ func main() {
 			survey.AskOne(nameH, &name)
 
 			fmt.Println("Installing git...")
-			gitInstaller := exec.Command("pkg", "install", "git")
-			gitInstallerOutput, err := gitInstaller.Output()
-			if err != nil {
-				fmt.Println("Error:", err)
-				return
+			// check git already installed
+			checkGitCmd := exec.Command("pacman", "-Q", "git")
+			checkGitCmdOutput, err := checkGitCmd.Output()
+			if err == nil {
+				fmt.Println("Git is already set up for use")
+				fmt.Println(string(checkGitCmdOutput))
+			} else {
+				gitInstaller := exec.Command("sudo", "pacman", "-S", "--noconfirm", "git")
+				gitInstallerOutput, err := gitInstaller.Output()
+				if err != nil {
+					fmt.Println("Error:", err)
+					return
+				}
+				fmt.Println(string(gitInstallerOutput))
+
 			}
-			fmt.Println(string(gitInstallerOutput))
+
+			fmt.Println("Setting up git...")
 
 			emailCmd := exec.Command("git", "config", "--global", "user.email", email)
 			if out, err := emailCmd.CombinedOutput(); err != nil {
@@ -73,34 +96,45 @@ func main() {
 			}
 
 			fmt.Println("Generating ssh key...")
-			sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email)
+			sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email, "-f", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518"))
 			if out, err := sshCmd.CombinedOutput(); err != nil {
 				fmt.Println("Error generating ssh key:", err)
 				fmt.Println("Output:", string(out))
 				return
 			}
-
-			fmt.Println("Your ssh key is:")
-			home, err := os.UserHomeDir()
-			if err != nil {
-				fmt.Println("Error finding home directory:", err)
-				return
-			}
-
-			sshKeyPath := filepath.Join(home, ".ssh", "id_ed25519.pub")
-			sshCatCmd := exec.Command("cat", sshKeyPath)
-
-			if out, err := sshCatCmd.CombinedOutput(); err != nil {
-				fmt.Println("Error generating ssh key:", err)
+			// cat ~/.ssh/id_ed25518.pub
+			fmt.Println("Copy this to github: ")
+			sshKeyDisplayCmd := exec.Command("cat", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518.pub"))
+			if out, err := sshKeyDisplayCmd.CombinedOutput(); err != nil {
+				fmt.Println("Error displaying ssh key:", err)
 				fmt.Println("Output:", string(out))
 				return
 			}
+
+			sshKeyDisplayCmdOutput, err := sshKeyDisplayCmd.Output()
+			if err != nil {
+				fmt.Println("Error displaying ssh key:", err)
+				return
+			}
+			fmt.Println(string(sshKeyDisplayCmdOutput))
+			// fmt.Println(string(sshKeyDisplayCmdOutput.Output()))
+		},
+	}
+
+	globalSetupCmd := &cobra.Command{
+		Use:   "init",
+		Short: "set up the system",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Welcome to cloud-hut! Give us a few moments to set up ")
+			apacheCmd.Run(cmd, args)
+
+			// setup git
 		},
 	}
 
 	rootCmd.Version = "0.0.1"
 	rootCmd.AddCommand(gitSetUp)
 	rootCmd.AddCommand(apacheCmd)
-
+	rootCmd.AddCommand(globalSetupCmd)
 	rootCmd.Execute()
 }
