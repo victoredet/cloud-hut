@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -33,7 +34,6 @@ func main() {
 
 			fmt.Println("Installing apache...")
 			apacheInstaller := exec.Command("sudo", "pacman", "--noconfirm", "-S", "apache")
-			// apacheInstallerOutput, err := apacheInstaller.Output()
 			apacheInstallerOutput, err := apacheInstaller.CombinedOutput()
 			fmt.Println(string(apacheInstallerOutput))
 			if err != nil {
@@ -140,7 +140,6 @@ func main() {
 			fmt.Println(string(composerInstallerOutput))
 			if err != nil {
 				fmt.Println("Error:", err)
-				// tell server what has happened here
 				fmt.Println("Please allow us send diagnostic information for help")
 			}
 		},
@@ -157,7 +156,6 @@ func main() {
 			fmt.Println(string(nodeInstallerOutput))
 			if err != nil {
 				fmt.Println("Error:", err)
-				// tell server what has happened here
 				fmt.Println("Please allow us send diagnostic information for help")
 			}
 		},
@@ -168,6 +166,15 @@ func main() {
 		Short: "set up the system",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Welcome to cloud-hut! Give us a few moments to set up ")
+
+			fmt.Println("Checking if sudo is installed...")
+			sudoCmd := exec.Command("pacman", "-Q", "sudo")
+			_, err := sudoCmd.Output()
+			if err == nil {
+				fmt.Println("Permissions are already set up for use")
+			}
+			exec.Command("sudo", "pacman", "Sy")
+
 			apacheCmd.Run(cmd, args)
 			gitSetUp.Run(cmd, args)
 			composerSetupCmd.Run(cmd, args)
@@ -182,4 +189,11 @@ func main() {
 	rootCmd.AddCommand(composerSetupCmd)
 	rootCmd.AddCommand(nodeSetupCmd)
 	rootCmd.Execute()
+
+	fmt.Println("Press Ctrl+C to exit...")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c // Block here until Ctrl+C
+	fmt.Println("\nExiting.")
 }
