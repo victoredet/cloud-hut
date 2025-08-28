@@ -3,25 +3,33 @@ package database
 
 import (
 	"log"
-
-	"mobileHost/models"
+	"os"
+	"path/filepath"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"mobileHost/models"
 )
 
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	database, err := gorm.Open(sqlite.Open("databse/store.db"), &gorm.Config{})
+	// Ensure the directory exists
+	dbPath := "database/store.db"
+	err := os.MkdirAll(filepath.Dir(dbPath), os.ModePerm)
 	if err != nil {
-		log.Fatal("Error, could not connect to database")
+		log.Fatal("Failed to create database directory:", err)
 	}
 
-	// auto migrate project
-	err = database.AutoMigrate((&models.Project{}))
+	database, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Error, could not migrate database")
+		log.Fatal("Error, could not connect to database:", err)
+	}
+
+	err = database.AutoMigrate(&models.Project{})
+	if err != nil {
+		log.Fatal("Error, could not migrate database:", err)
 	}
 
 	DB = database

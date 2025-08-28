@@ -9,6 +9,8 @@
 # Test binary
 *.test
 
+*.db
+
 # Output of go build
 /build/
 /bin/
