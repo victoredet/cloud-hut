@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"mobileHost/database"
 	"mobileHost/projects"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -14,6 +15,8 @@ import (
 )
 
 func main() {
+	database.ConnectDatabase()
+
 	rootCmd := &cobra.Command{
 		Use:   "cloud-hut",
 		Short: "cloud Hut",
