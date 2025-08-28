@@ -52,20 +52,6 @@ func main() {
 		Use:   "git",
 		Short: "set up git",
 		Run: func(cmd *cobra.Command, args []string) {
-			var email string
-			var name string
-			emailH := &survey.Input{
-				Message: "Enter your git email address: ",
-			}
-
-			survey.AskOne(emailH, &email)
-
-			nameH := &survey.Input{
-				Message: "Enter your name: ",
-			}
-
-			survey.AskOne(nameH, &name)
-
 			fmt.Println("Installing git...")
 			// check git already installed
 			checkGitCmd := exec.Command("pacman", "-Q", "git")
@@ -86,51 +72,74 @@ func main() {
 
 			fmt.Println("Setting up git...")
 
-			emailCmd := exec.Command("git", "config", "--global", "user.email", email)
-			if out, err := emailCmd.CombinedOutput(); err != nil {
-				fmt.Println("Error setting email:", err)
-				fmt.Println("Output:", string(out))
-				return
-			}
-
-			nameCmd := exec.Command("git", "config", "--global", "user.name", name)
-			if out, err := nameCmd.CombinedOutput(); err != nil {
-				fmt.Println("Error setting name:", err)
-				fmt.Println("Output:", string(out))
-				return
-			}
-
-			fmt.Println("Generating ssh key...")
-			sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email, "-f", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518"))
-			if out, err := sshCmd.CombinedOutput(); err != nil {
-				fmt.Println("Error generating ssh key:", err)
-				fmt.Println("Output:", string(out))
-				return
-			}
-
-			fmt.Println("SSH key generated successfully.")
-			fmt.Println("Copy this to GitHub: ")
-			keyPath := filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25518")
-
-			sshKeyDisplayCmd := keyPath + ".pub"
-			pubKey, err := os.ReadFile(sshKeyDisplayCmd)
-			if err != nil {
-				fmt.Println("Error reading public key:", err)
-				return
-			}
-
-			fmt.Println("Copy this to GitHub:")
-			fmt.Println(string(pubKey))
-
-			pubKeyStr := string(pubKey)
-			err = clipboard.WriteAll(pubKeyStr)
-			if err != nil {
-				fmt.Println("Failed to copy to clipboard:", err)
+			checkSSHKeyCmd := exec.Command("ls", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25519"))
+			checkSSHKeyCmdOutput, err := checkSSHKeyCmd.Output()
+			if err == nil {
+				fmt.Println("SSH key already exists")
+				fmt.Println(string(checkSSHKeyCmdOutput))
 			} else {
-				fmt.Println("✅ SSH public key copied to clipboard.")
-			}
+				var email string
+				var name string
+				emailH := &survey.Input{
+					Message: "Enter your git email address: ",
+				}
 
-			exec.Command("xdg-open", "https://github.com/settings/ssh/new")
+				survey.AskOne(emailH, &email)
+
+				nameH := &survey.Input{
+					Message: "Enter your name: ",
+				}
+
+				survey.AskOne(nameH, &name)
+
+				emailCmd := exec.Command("git", "config", "--global", "user.email", email)
+				if out, err := emailCmd.CombinedOutput(); err != nil {
+					fmt.Println("Error setting email:", err)
+					fmt.Println("Output:", string(out))
+					return
+				}
+
+				nameCmd := exec.Command("git", "config", "--global", "user.name", name)
+				if out, err := nameCmd.CombinedOutput(); err != nil {
+					fmt.Println("Error setting name:", err)
+					fmt.Println("Output:", string(out))
+					return
+				}
+
+				fmt.Println("Generating ssh key...")
+				sshCmd := exec.Command("ssh-keygen", "-t", "ed25519", "-C", email, "-f", filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25519"))
+
+				if out, err := sshCmd.CombinedOutput(); err != nil {
+					fmt.Println("Error generating ssh key:", err)
+					fmt.Println("Output:", string(out))
+					return
+				}
+
+				fmt.Println("SSH key generated successfully.")
+				fmt.Println("Copy this to GitHub: ")
+				keyPath := filepath.Join(os.Getenv("HOME"), ".ssh", "id_ed25519")
+
+				sshKeyDisplayCmd := keyPath + ".pub"
+				pubKey, err := os.ReadFile(sshKeyDisplayCmd)
+				if err != nil {
+					fmt.Println("Error reading public key:", err)
+					return
+				}
+
+				fmt.Println("Copy this to GitHub:")
+				fmt.Println(string(pubKey))
+
+				pubKeyStr := string(pubKey)
+				err = clipboard.WriteAll(pubKeyStr)
+				if err != nil {
+					fmt.Println("Failed to copy to clipboard:", err)
+				} else {
+					fmt.Println("✅ SSH public key copied to clipboard.")
+				}
+
+				exec.Command("xdg-open", "https://github.com/settings/ssh/new")
+
+			}
 		},
 	}
 

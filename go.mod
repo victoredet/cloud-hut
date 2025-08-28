@@ -5,6 +5,7 @@ go 1.24.6
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
