@@ -200,7 +200,6 @@ func main() {
 			survey.AskOne(projectTypeH, &projectType)
 
 			projects.CreateProject(projectName, projectType)
-			//
 
 			fmt.Println("Adding a new project...")
 		},
