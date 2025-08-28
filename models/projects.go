@@ -13,4 +13,5 @@ type Project struct {
 	Type    string
 	URL     string
 	GitRepo string
+	Branch  string
 }

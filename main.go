@@ -211,9 +211,8 @@ func main() {
 			survey.AskOne(projectNameH, &projectName)
 			survey.AskOne(projectTypeH, &projectType)
 
-			projects.CreateProject(projectName, projectType)
-
 			fmt.Println("Adding a new project...")
+			projects.CreateProject(projectName, projectType)
 		},
 	}
 
