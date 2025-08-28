@@ -195,7 +195,7 @@ func main() {
 		},
 	}
 
-	addProjectCmd := &cobra.Command{
+	projectCmd := &cobra.Command{
 		Use:   "project",
 		Short: "add a new project",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -217,12 +217,21 @@ func main() {
 		},
 	}
 
+	listProjectsCmd := &cobra.Command{
+		Use:   "ls",
+		Short: "list all projects",
+		Run: func(cmd *cobra.Command, args []string) {
+			projects.ListProjects()
+		},
+	}
+	projectCmd.AddCommand(listProjectsCmd)
+
 	rootCmd.Version = "0.0.1"
 	rootCmd.AddCommand(gitSetUp)
 	rootCmd.AddCommand(apacheCmd)
 	rootCmd.AddCommand(globalSetupCmd)
 	rootCmd.AddCommand(composerSetupCmd)
 	rootCmd.AddCommand(nodeSetupCmd)
-	rootCmd.AddCommand(addProjectCmd)
+	rootCmd.AddCommand(projectCmd)
 	rootCmd.Execute()
 }
