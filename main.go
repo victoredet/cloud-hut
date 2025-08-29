@@ -178,8 +178,16 @@ func main() {
 		Use:   "init",
 		Short: "set up the system",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Welcome to cloud-hut! Give us a few moments to set up ")
+			fmt.Println(`
+   ▄▄▄  ▀▀█                      █         █               ▄   
+ ▄▀   ▀   █     ▄▄▄   ▄   ▄   ▄▄▄█         █ ▄▄   ▄   ▄  ▄▄█▄▄ 
+ █        █    █▀ ▀█  █   █  █▀ ▀█         █▀  █  █   █    █   
+ █        █    █   █  █   █  █   █   ▀▀▀   █   █  █   █    █   
+  ▀▄▄▄▀   ▀▄▄  ▀█▄█▀  ▀▄▄▀█  ▀█▄██         █   █  ▀▄▄▀█    ▀▄▄ 
+                                                               
+                                                               `)
 
+			fmt.Println("Welcome! Give us a few moments to set up ")
 			fmt.Println("Checking if sudo is installed...")
 			sudoCmd := exec.Command("pacman", "-Q", "sudo")
 			_, err := sudoCmd.Output()
