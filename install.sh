@@ -54,6 +54,24 @@ download_and_install() {
 
   echo "Installation complete!"
   echo "You can now run the app using: $DEST"
+  if [[ $OS == "linux" || $OS == "macos" ]]; then
+    echo "Adding alias to your shell configuration..."
+
+    # Determine the shell type and add the alias accordingly
+    if [ -n "$BASH_VERSION" ]; then
+      # If the user is using bash
+      echo "alias cloud-hut='$DEST'" >>~/.bashrc
+      source ~/.bashrc
+      echo "Alias added to ~/.bashrc"
+    elif [ -n "$ZSH_VERSION" ]; then
+      # If the user is using zsh
+      echo "alias cloud-hut='$DEST'" >>~/.zshrc
+      source ~/.zshrc
+      echo "Alias added to ~/.zshrc"
+    else
+      echo "No suitable shell configuration found. Please manually add the alias."
+    fi
+  fi
 }
 
 # Download and install the binary
