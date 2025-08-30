@@ -26,15 +26,15 @@ echo "Detected OS: $OS"
 download_and_install() {
   case $OS in
   linux)
-    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/installapp-linux"
+    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/cloud-hut"
     DEST="/usr/local/bin/cloud-hut"
     ;;
   macos)
-    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/installapp-macos"
+    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/cloud-hut"
     DEST="/usr/local/bin/cloud-hut"
     ;;
   windows)
-    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/installapp.exe"
+    URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/$RELEASE_TAG/cloud-hut.exe"
     DEST="$HOME/cloud-hut.exe"
     ;;
   *)
